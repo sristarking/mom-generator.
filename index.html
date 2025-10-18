@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMR Tap Changers - MOM Generator</title>
+    <style>
+        body {
+            font-family: Cambria, serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .form-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            background: linear-gradient(90deg, #1e3a8a 0%, #dc2626 100%);
+            color: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            background: #e5e7eb;
+            color: #333;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            background: linear-gradient(90deg, #1e3a8a 0%, #dc2626 100%);
+            color: white;
+        }
+        .tab-btn:hover {
+            opacity: 0.8;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .row {
+            display: flex;
+            gap: 15px;
+        }
+        .col {
+            flex: 1;
+        }
+        .section-title {
+            background: #1e3a8a;
+            color: white;
+            padding: 8px;
+            margin: 20px 0 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .generate-btn {
+            background: linear-gradient(90deg, #1e3a8a 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+            font-weight: bold;
+        }
+        .generate-btn:hover {
+            opacity: 0.9;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        #headerPreview {
+            max-width: 100%;
+            max-height: 150px;
+            margin-top: 10px;
+            display: none;
+            border: 1px solid #ddd;
+            padding: 5px;
+            border-radius: 4px;
+            object-fit: contain;
+        }
+        .add-point-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px auto;
+            font-weight: bold;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+        .add-point-btn:hover {
+            background: #059669;
+            transform: scale(1.1);
+        }
+        .extra-point {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f9fafb;
+            border-radius: 5px;
+            border-left: 4px solid #10b981;
+        }
+        .remove-point-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 15px;
+            font-size: 13px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .remove-point-btn:hover {
+            background: #dc2626;
+        }
+        .add-point-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .fixed-point {
+            background: #f0f9ff;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #3b82f6;
+        }
+        .fixed-point strong {
+            color: #1e40af;
+        }
+    
+
+/* --- Stronger Word header enforcement --- */
+.header-img, .docx-header {
+  width: 20cm !important;
+  height: 3.58cm !important;
+  max-width: 20cm !important;
+  max-height: 3.58cm !important;
+  overflow: hidden !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  line-height: 0 !important;
+  display: block !important;
+}
+.header-img img, .docx-header img {
+  width: 20cm !important;
+  height: 3.58cm !important;
+  max-width: 20cm !important;
+  max-height: 3.58cm !important;
+  object-fit: contain !important;
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 0 !important;
+  border: none !important;
+}
+.header-img p, .docx-header p, .header-img h1, .docx-header h1 {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 0 !important;
+  font-size: 1px !important;
+}
+/* Remove any paragraph spacing that Word might create around the header block */
+p.header-spacer { margin:0 !important; padding:0 !important; line-height:0 !important; height:0 !important; }
+
+</style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="header">
+            <h1>EMR Tap Changers - MOM Generator</h1>
+            <p>Minutes of Meeting Generator with Company Header</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="switchTab('regular')">REGULAR MOM</button>
+            <button class="tab-btn" onclick="switchTab('overhauling')">OVERHAULING MOM</button>
+        </div>
+
+        <!-- Upload Header Image (Common) -->
+        <div class="section-title">Company Header</div>
+        <div class="form-group">
+            <label>Upload Company Header Image:</label>
+            <input type="file" id="headerUpload" accept="image/*">
+            <img id="headerPreview" alt="Header Preview"/>
+        </div>
+
+        <!-- REGULAR MOM TAB -->
+        <div id="regularTab" class="tab-content active">
+            <form id="momForm">
+                <div class="section-title">Customer Information</div>
+                <div class="form-group">
+                    <label>Customer Name:</label>
+                    <input type="text" id="customerName" required>
+                </div>
+                <div class="form-group">
+                    <label>Site Address:</label>
+                    <input type="text" id="siteAddress" required>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label>Site Reporting Date:</label>
+                        <input type="date" id="reportingDate" required>
+                    </div>
+                    <div class="col">
+                        <label>Completion Date:</label>
+                        <input type="date" id="completionDate" required>
+                    </div>
+                    <div class="col">
+                        <label>No. of days:</label>
+                        <input type="number" id="numberOfDays" required>
+                    </div>
+                </div>
+
+                <div class="section-title">Service Information</div>
+                <div class="row">
+                    <div class="col">
+                        <label>Last Service Date:</label>
+                        <input type="date" id="lastServiceDate">
+                    </div>
+                    <div class="col">
+                        <label>Next Due Date:</label>
+                        <input type="date" id="nextDueDate">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label>Service Type:</label>
+                        <select id="serviceType">
+                            <option value="Warranty">Warranty</option>
+                            <option value="Non-Warranty">Non-Warranty</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label>Recovery Type:</label>
+                        <select id="recoveryType">
+                            <option value="Recoverable">Recoverable</option>
+                            <option value="Non-Recoverable">Non-Recoverable</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="section-title">OLTC Details</div>
+                <div class="row">
+                    <div class="col">
+                        <label>Specification:</label>
+                        <input type="text" id="specification" placeholder="e.g., L IIII 200 D">
+                    </div>
+                    <div class="col">
+                        <label>Serial No:</label>
+                        <input type="text" id="serialNo" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label>Year of Mfg:</label>
+                        <input type="text" id="yearOfMfg">
+                    </div>
+                    <div class="col">
+                        <label>Resistance (Ohms):</label>
+                        <input type="text" id="resistance">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Counter Reading:</label>
+                    <input type="text" id="counterReading" placeholder="Enter counter reading">
+                </div>
+
+                <div class="section-title">Transformer Details</div>
+                <div class="form-group">
+                    <label>Transformer Make:</label>
+                    <input type="text" id="transformerMake" placeholder="e.g., VIDYUT">
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label>Transformer Sl. No:</label>
+                        <input type="text" id="transformerSlNo" placeholder="Enter transformer serial number">
+                    </div>
+                    <div class="col">
+                        <label>Transformer Rating (MVA/KV):</label>
+                        <input type="text" id="transformerRating" placeholder="e.g., 100 MVA / 220 KV">
+                    </div>
+                </div>
+
+                <div class="section-title">OLTC Service Details</div>
+                <div class="form-group">
+                    <label>1.</label>
+                    <textarea id="problemIdentification" placeholder="Enter point 1 details"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>2.</label>
+                    <textarea id="technicalInvestigation" placeholder="Enter point 2 details"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>3.</label>
+                    <textarea id="rootCauseAnalysis" placeholder="Enter point 3 details"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>4.</label>
+                    <textarea id="correctiveMaintenance" placeholder="Enter point 4 details"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>5.</label>
+                    <textarea id="systemRestoration" placeholder="Enter point 5 details"></textarea>
+                </div>
+                
+                <div id="extraPointsContainer"></div>
+                
+                <div class="add-point-container">
+                    <button type="button" class="add-point-btn" onclick="addExtraPoint()" title="Add More Points">+</button>
+                </div>
+
+                <div class="section-title">Recommended Spares</div>
+                <div class="form-group">
+                    <label>Recommended Spares (one per line):</label>
+                    <textarea id="recommendedSpares" placeholder="List recommended spare parts"></textarea>
+                </div>
+
+                <div class="section-title">Contact Information</div>
+                <div class="row">
+                    <div class="col">
+                        <label>Customer Contact Name:</label>
+                        <input type="text" id="customerContactName">
+                    </div>
+                    <div class="col">
+                        <label>Customer Phone:</label>
+                        <input type="tel" id="customerPhone">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Customer Email:</label>
+                    <input type="email" id="customerEmail">
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label>EMR Tap Changers Private Limited Engineer Name:</label>
+                        <input type="text" id="engineerName" value="MR.SRI VIGNESH">
+                    </div>
+                    <div class="col">
+                        <label>Engineer Phone:</label>
+                        <input type="tel" id="engineerPhone" value="9344963661">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Engineer Position:</label>
+                    <input type="text" id="engineerPosition" value="Regional Engineer Gujarat">
+                </div>
+
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+                    <button type="button" class="generate-btn" onclick="generateMOM('regular', 'pdf')">Download PDF</button>
+                    
+                </div>
+
+                <!-- Save / Reset Buttons -->
+                <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+                  <button id="saveBtn" type="button" style="background:#10b981; color:white; border:none; padding:10px 16px; border-radius:6px; font-weight:700; cursor:pointer;">
+                    Save
+                  </button>
+                  <button id="resetBtn" type="button" style="background:#ef4444; color:white; border:none; padding:10px 16px; border-radius:6px; font-weight:700; cursor:pointer;">
+                    Reset
+                  </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- OVERHAULING MOM TAB -->
+        <div id="overhaulingTab" class="tab-content">
+            <form id="overhaulingForm">
+                <div class="section-title">Customer Information</div>
+                <div class="form-group">
+                    <label>Customer Name:</label>
+                    <input type="text" id="oh_customerName" required>
+                </div>
+                <div class="form-group">
+                    <label>Site Address:</label>
+                    <input type="text" id="oh_siteAddress" required>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label>Site Reporting Date:</label>
+                        <input type="date" id="oh_reportingDate" required>
+                    </div>
+                    <div class="col">
+                        <label>Completion Date:</label>
+                        <input type="date" id="oh_completionDate" required>
+                    </div>
+                    <div class="col">
+                        <label>No. of days:</label>
+                        <input type="number" id="oh_numberOfDays" required>
+                    </div>
+                </div>
+
+                <div class="section-title">Service Information</div>
+                <div class="row">
+                    <div class="col">
+                        <label>Last Service Date:</label>
+                        <input type="date" id="oh_lastServiceDate">
+                    </div>
+                    <div class="col">
+                        <label>Next Due Date:</label>
+                        <input type="date" id="oh_nextDueDate">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label>Service Type:</label>
+                        <select id="oh_serviceType">
+                            <option value="Warranty">Warranty</option>
+                            <option value="Non-Warranty">Non-Warranty</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label>Recovery Type:</label>
+                        <select id="oh_recoveryType">
+                            <option value="Recoverable">Recoverable</option>
+                            <option value="Non-Recoverable">Non-Recoverable</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="section-title">OLTC Details</div>
+                <div class="row">
+                    <div class="col">
+                        <label>Specification:</label>
+                        <input type="text" id="oh_specification" placeholder="e.g., L IIII 200 D">
+                    </div>
+                    <div class="col">
+                        <label>Serial No:</label>
+                        <input type="text" id="oh_serialNo" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label>Year of Mfg:</label>
+                        <input type="text" id="oh_yearOfMfg">
+                    </div>
+                    <div class="col">
+                        <label>Resistance (Ohms):</label>
+                        <input type="text" id="oh_resistance">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Counter Reading:</label>
+                    <input type="text" id="oh_counterReading" placeholder="Enter counter reading">
+                </div>
+
+                <div class="section-title">Transformer Details</div>
+                <div class="form-group">
+                    <label>Transformer Make:</label>
+                    <input type="text" id="oh_transformerMake" placeholder="e.g., VIDYUT">
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label>Transformer Sl. No:</label>
+                        <input type="text" id="oh_transformerSlNo" placeholder="Enter transformer serial number">
+                    </div>
+                    <div class="col">
+                        <label>Transformer Rating (MVA/KV):</label>
+                        <input type="text" id="oh_transformerRating" placeholder="e.g., 100 MVA / 220 KV">
+                    </div>
+                </div>
+
+                <div class="section-title">OLTC Overhauling Details (Fixed Points)</div>
+                <div class="fixed-point">
+                    <strong>Introduction:</strong> EMR Engineer visited the site on <span style="color: #dc2626;">[Site Reporting Date]</span> regarding inspection and rectification of OLTC Sl.No. <span style="color: #dc2626;">[OLTC Serial No]</span>
+                </div>
+                <div class="fixed-point">
+                    <strong>1.</strong> Lifted the diverter switch from the DOVA chamber and cleaned with fresh oil.
+                </div>
+                <div class="fixed-point">
+                    <strong>2.</strong> The DOVA contacts were inspected and found satisfactory.
+                </div>
+                <div class="fixed-point">
+                    <strong>3.</strong> The diverter switch was odd and even continuity checks found Ok.
+                </div>
+                <div class="fixed-point">
+                    <strong>4.</strong> After inspection of the diverter switch the resistance is measured with the value of <span style="color: #dc2626;">[Resistance Value]</span> Ω were found satisfactory.
+                </div>
+                <div class="fixed-point">
+                    <strong>5.</strong> The diverter switch is operated manually and the operation was found satisfactory.
+                </div>
+                <div class="fixed-point">
+                    <strong>6.</strong> Then the diverter switch is re-installed into the chamber and filled with new oil (65kv BDV)
+                </div>
+                <div class="fixed-point">
+                    <strong>7.</strong> Bevel Gear have applied Grease and found satisfactory.
+                </div>
+                <div class="fixed-point">
+                    <strong>8.</strong> Synchronizing is checked between the Drive mechanism and OLTC it was found satisfactory.
+                </div>
+                <div class="fixed-point">
+                    <strong>9.</strong> The drive mechanism is operated by manually & electrically it was found satisfactory.
+                </div>
+                <div class="fixed-point">
+                    <strong>10.</strong> The final Transformer charge in load.
+                </div>
+
+                <div id="oh_extraPointsContainer"></div>
+                
+                <div class="add-point-container">
+                    <button type="button" class="add-point-btn" onclick="addOhExtraPoint()" title="Add More Points">+</button>
+                </div>
+
+                <div class="section-title">Recommended Spares</div>
+                <div class="form-group">
+                    <label>Recommended Spares (one per line):</label>
+                    <textarea id="oh_recommendedSpares" placeholder="List recommended spare parts"></textarea>
+</div>
+
+                <div class="section-title">Contact Information</div>
+                <div class="row">
+                    <div class="col">
+                        <label>Customer Contact Name:</label>
+                        <input type="text" id="oh_customerContactName">
+                    </div>
+                    <div class="col">
+                        <label>Customer Phone:</label>
+                        <input type="tel" id="oh_customerPhone">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Customer Email:</label>
+                    <input type="email" id="oh_customerEmail">
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label>EMR Tap Changers Private Limited Engineer Name:</label>
+                        <input type="text" id="oh_engineerName" value="MR.SRI VIGNESH">
+                    </div>
+                    <div class="col">
+                        <label>Engineer Phone:</label>
+                        <input type="tel" id="oh_engineerPhone" value="9344963661">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Engineer Position:</label>
+                    <input type="text" id="oh_engineerPosition" value="Regional Engineer Gujarat">
+                </div>
+
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+                    <button type="button" class="generate-btn" onclick="generateMOM('overhauling', 'pdf')">Download PDF</button>
+                    
+                </div>
+
+                <!-- Save / Reset Buttons -->
+                <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+                  <button id="saveBtnOH" type="button" style="background:#10b981; color:white; border:none; padding:10px 16px; border-radius:6px; font-weight:700; cursor:pointer;">
+                    Save
+                  </button>
+                  <button id="resetBtnOH" type="button" style="background:#ef4444; color:white; border:none; padding:10px 16px; border-radius:6px; font-weight:700; cursor:pointer;">
+                    Reset
+                  </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/html-docx-js@0.3.1/dist/html-docx.js"></script>
+    <script>
+        // ============================================
+        // SAVE & RESET FUNCTIONALITY
+        // ============================================
+        const STORAGE_KEY_REGULAR = 'EMR_MOM_REGULAR_v1';
+        const STORAGE_KEY_OVERHAULING = 'EMR_MOM_OVERHAULING_v1';
+        const headerPreview = document.getElementById('headerPreview');
+        let headerDataURL = null;
+
+        // REGULAR TAB - Save function
+        document.getElementById("saveBtn").addEventListener("click", () => {
+            try {
+                const fields = document.querySelectorAll('#regularTab input, #regularTab textarea, #regularTab select');
+                const data = { headerDataURL, fields: {} };
+
+                fields.forEach(f => {
+                    if (f.type === 'file') return;
+                    if (f.id) data.fields[f.id] = f.value;
+                });
+
+                localStorage.setItem(STORAGE_KEY_REGULAR, JSON.stringify(data));
+                alert('Regular MOM data saved successfully!');
+            } catch (err) {
+                alert('Save failed: ' + err.message);
+            }
+        });
+
+        // REGULAR TAB - Reset function
+        document.getElementById("resetBtn").addEventListener("click", () => {
+            if (!confirm('Are you sure you want to clear all data in the Regular MOM tab?')) return;
+
+            localStorage.removeItem(STORAGE_KEY_REGULAR);
+            document.querySelectorAll('#regularTab input, #regularTab textarea, #regularTab select').forEach(el => {
+                if (el.type !== 'file') el.value = '';
+            });
+
+            alert('Regular MOM tab data has been cleared.');
+        });
+
+        // OVERHAULING TAB - Save function
+        document.getElementById("saveBtnOH").addEventListener("click", () => {
+            try {
+                const fields = document.querySelectorAll('#overhaulingTab input, #overhaulingTab textarea, #overhaulingTab select');
+                const data = { headerDataURL, fields: {} };
+
+                fields.forEach(f => {
+                    if (f.type === 'file') return;
+                    if (f.id) data.fields[f.id] = f.value;
+                });
+
+                localStorage.setItem(STORAGE_KEY_OVERHAULING, JSON.stringify(data));
+                alert('Overhauling MOM data saved successfully!');
+            } catch (err) {
+                alert('Save failed: ' + err.message);
+            }
+        });
+
+        // OVERHAULING TAB - Reset function
+        document.getElementById("resetBtnOH").addEventListener("click", () => {
+            if (!confirm('Are you sure you want to clear all data in the Overhauling MOM tab?')) return;
+
+            localStorage.removeItem(STORAGE_KEY_OVERHAULING);
+            document.querySelectorAll('#overhaulingTab input, #overhaulingTab textarea, #overhaulingTab select').forEach(el => {
+                if (el.type !== 'file') el.value = '';
+            });
+
+            alert('Overhauling MOM tab data has been cleared.');
+        });
+
+        // Auto-load saved data on page open
+        window.addEventListener('DOMContentLoaded', () => {
+            // Load Regular MOM data
+            const savedRegular = localStorage.getItem(STORAGE_KEY_REGULAR);
+            if (savedRegular) {
+                const data = JSON.parse(savedRegular);
+                if (data.headerDataURL && headerPreview) {
+                    headerDataURL = data.headerDataURL;
+                    headerPreview.src = headerDataURL;
+                    headerPreview.style.display = 'block';
+                }
+
+                for (const key in data.fields) {
+                    const el = document.getElementById(key);
+                    if (el) el.value = data.fields[key];
+                }
+            }
+
+            // Load Overhauling MOM data
+            const savedOverhauling = localStorage.getItem(STORAGE_KEY_OVERHAULING);
+            if (savedOverhauling) {
+                const data = JSON.parse(savedOverhauling);
+                if (data.headerDataURL && headerPreview) {
+                    headerDataURL = data.headerDataURL;
+                    headerPreview.src = headerDataURL;
+                    headerPreview.style.display = 'block';
+                }
+
+                for (const key in data.fields) {
+                    const el = document.getElementById(key);
+                    if (el) el.value = data.fields[key];
+                }
+            }
+        });
+
+        // ============================================
+        // ORIGINAL FUNCTIONALITY BELOW
+        // ============================================
+        // Default header image injected by assistant
+        const defaultHeaderImage = "data:image/png;base64,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";
+        let headerImgData = defaultHeaderImage;
+
+        // Show default preview on load
+        document.addEventListener("DOMContentLoaded", function() {
+            const preview = document.getElementById("headerPreview");
+            if (preview) {
+                preview.src = headerImgData;
+                preview.style.display = "block";
+            }
+        });
+
+
+        let extraPointCounter = 6;
+        let ohExtraPointCounter = 11; // Start after the 10 fixed points in overhauling
+
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            if (tabName === 'regular') {
+                document.getElementById('regularTab').classList.add('active');
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            } else {
+                document.getElementById('overhaulingTab').classList.add('active');
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            }
+        }
+
+        document.getElementById("headerUpload").addEventListener("change", function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    headerImgData = e.target.result;
+                    const preview = document.getElementById("headerPreview");
+                    preview.src = headerImgData;
+                    preview.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function addExtraPoint() {
+            const container = document.getElementById('extraPointsContainer');
+            const pointNumber = extraPointCounter;
+            
+            const pointDiv = document.createElement('div');
+            pointDiv.className = 'extra-point';
+            pointDiv.id = `extraPoint${pointNumber}`;
+            
+            pointDiv.innerHTML = `
+                <div class="form-group">
+                    <label>${pointNumber}.</label>
+                    <textarea id="extraPoint${pointNumber}Text" placeholder="Enter point ${pointNumber} details"></textarea>
+                    <button type="button" class="remove-point-btn" onclick="removeExtraPoint(${pointNumber})">Remove Point</button>
+                </div>
+            `;
+            
+            container.appendChild(pointDiv);
+            extraPointCounter++;
+        }
+
+        function removeExtraPoint(pointNumber) {
+            const pointDiv = document.getElementById(`extraPoint${pointNumber}`);
+            if (pointDiv) {
+                pointDiv.remove();
+            }
+        }
+
+        function addOhExtraPoint() {
+            const container = document.getElementById('oh_extraPointsContainer');
+            const pointNumber = ohExtraPointCounter;
+            
+            const pointDiv = document.createElement('div');
+            pointDiv.className = 'extra-point';
+            pointDiv.id = `oh_extraPoint${pointNumber}`;
+            
+            pointDiv.innerHTML = `
+                <div class="form-group">
+                    <label>${pointNumber}.</label>
+                    <textarea id="oh_extraPoint${pointNumber}Text" placeholder="Enter point ${pointNumber} details"></textarea>
+                    <button type="button" class="remove-point-btn" onclick="removeOhExtraPoint(${pointNumber})">Remove Point</button>
+                </div>
+            `;
+            
+            container.appendChild(pointDiv);
+            ohExtraPointCounter++;
+        }
+
+        function removeOhExtraPoint(pointNumber) {
+            const pointDiv = document.getElementById(`oh_extraPoint${pointNumber}`);
+            if (pointDiv) {
+                pointDiv.remove();
+            }
+        }
+
+        function generateMOM(type, format) {
+            if (type === 'regular') {
+                const formData = {
+                    customerName: document.getElementById('customerName').value,
+                    siteAddress: document.getElementById('siteAddress').value,
+                    reportingDate: formatDate(document.getElementById('reportingDate').value),
+                    completionDate: formatDate(document.getElementById('completionDate').value),
+                    numberOfDays: document.getElementById('numberOfDays').value,
+                    lastServiceDate: formatDate(document.getElementById('lastServiceDate').value),
+                    nextDueDate: formatDate(document.getElementById('nextDueDate').value),
+                    serviceType: document.getElementById('serviceType').value,
+                    recoveryType: document.getElementById('recoveryType').value,
+                    specification: document.getElementById('specification').value,
+                    serialNo: document.getElementById('serialNo').value,
+                    yearOfMfg: document.getElementById('yearOfMfg').value,
+                    resistance: document.getElementById('resistance').value,
+                    counterReading: document.getElementById('counterReading').value,
+                    transformerMake: document.getElementById('transformerMake').value,
+                    transformerSlNo: document.getElementById('transformerSlNo').value,
+                    transformerRating: document.getElementById('transformerRating').value,
+                    problemIdentification: document.getElementById('problemIdentification').value,
+                    technicalInvestigation: document.getElementById('technicalInvestigation').value,
+                    rootCauseAnalysis: document.getElementById('rootCauseAnalysis').value,
+                    correctiveMaintenance: document.getElementById('correctiveMaintenance').value,
+                    systemRestoration: document.getElementById('systemRestoration').value,
+                    recommendedSpares: document.getElementById('recommendedSpares').value,
+                    customerContactName: document.getElementById('customerContactName').value,
+                    customerPhone: document.getElementById('customerPhone').value,
+                    customerEmail: document.getElementById('customerEmail').value,
+                    engineerName: document.getElementById('engineerName').value,
+                    engineerPhone: document.getElementById('engineerPhone').value,
+                    engineerPosition: document.getElementById('engineerPosition').value
+                };
+
+                // Collect extra points
+                formData.extraPoints = [];
+                const extraPointsContainer = document.getElementById('extraPointsContainer');
+                const extraPointDivs = extraPointsContainer.querySelectorAll('.extra-point');
+                extraPointDivs.forEach((div) => {
+                    const textarea = div.querySelector('textarea');
+                    if (textarea && textarea.value.trim()) {
+                        const pointNumber = textarea.id.replace('extraPointText', '').replace('extraPoint', '');
+                        formData.extraPoints.push({
+                            number: pointNumber,
+                            text: textarea.value
+                        });
+                    }
+                });
+
+                if (format === 'pdf') {
+                    generatePDF(formData, 'regular');
+                } else if (format === 'docx') {
+                    generateDOCX(formData, 'regular');
+                }
+            } else {
+                const formData = {
+                    customerName: document.getElementById('oh_customerName').value,
+                    siteAddress: document.getElementById('oh_siteAddress').value,
+                    reportingDate: formatDate(document.getElementById('oh_reportingDate').value),
+                    completionDate: formatDate(document.getElementById('oh_completionDate').value),
+                    numberOfDays: document.getElementById('oh_numberOfDays').value,
+                    lastServiceDate: formatDate(document.getElementById('oh_lastServiceDate').value),
+                    nextDueDate: formatDate(document.getElementById('oh_nextDueDate').value),
+                    serviceType: document.getElementById('oh_serviceType').value,
+                    recoveryType: document.getElementById('oh_recoveryType').value,
+                    specification: document.getElementById('oh_specification').value,
+                    serialNo: document.getElementById('oh_serialNo').value,
+                    yearOfMfg: document.getElementById('oh_yearOfMfg').value,
+                    resistance: document.getElementById('oh_resistance').value,
+                    counterReading: document.getElementById('oh_counterReading').value,
+                    transformerMake: document.getElementById('oh_transformerMake').value,
+                    transformerSlNo: document.getElementById('oh_transformerSlNo').value,
+                    transformerRating: document.getElementById('oh_transformerRating').value,
+                    recommendedSpares: document.getElementById('oh_recommendedSpares').value,
+                    customerContactName: document.getElementById('oh_customerContactName').value,
+                    customerPhone: document.getElementById('oh_customerPhone').value,
+                    customerEmail: document.getElementById('oh_customerEmail').value,
+                    engineerName: document.getElementById('oh_engineerName').value,
+                    engineerPhone: document.getElementById('oh_engineerPhone').value,
+                    engineerPosition: document.getElementById('oh_engineerPosition').value
+                };
+
+                // Collect extra points for overhauling
+                formData.extraPoints = [];
+                const extraPointsContainer = document.getElementById('oh_extraPointsContainer');
+                const extraPointDivs = extraPointsContainer.querySelectorAll('.extra-point');
+                extraPointDivs.forEach((div) => {
+                    const textarea = div.querySelector('textarea');
+                    if (textarea && textarea.value.trim()) {
+                        const pointNumber = textarea.id.replace('oh_extraPointText', '').replace('oh_extraPoint', '');
+                        formData.extraPoints.push({
+                            number: pointNumber,
+                            text: textarea.value
+                        });
+                    }
+                });
+
+                if (format === 'pdf') {
+                    generatePDF(formData, 'overhauling');
+                } else if (format === 'docx') {
+                    generateDOCX(formData, 'overhauling');
+                }
+            }
+        }
+
+        async function generatePDF(data, type) {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = generateMOMHTML(data, type);
+            tempDiv.style.position = 'absolute';
+            tempDiv.style.left = '-9999px';
+            tempDiv.style.width = '190mm';
+            tempDiv.style.minHeight = '277mm';
+            tempDiv.style.backgroundColor = 'white';
+            tempDiv.style.padding = '5mm';
+            tempDiv.style.boxSizing = 'border-box';
+            document.body.appendChild(tempDiv);
+
+            try {
+                const canvas = await html2canvas(tempDiv, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    width: tempDiv.offsetWidth,
+                    height: tempDiv.offsetHeight,
+                    allowTaint: true
+                });
+
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                
+                const imgData = canvas.toDataURL('image/png', 1.0);
+                
+                const imgWidth = 190;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                let finalHeight = imgHeight;
+                if (imgHeight > 277) {
+                    finalHeight = 277;
+                }
+                
+                pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, finalHeight);
+
+                const prefix = type === 'overhauling' ? 'Overhauling_MOM' : 'MOM';
+                pdf.save(`${prefix}_${data.customerName.replace(/\s+/g, '_')}_${data.reportingDate}.pdf`);
+                
+                alert('MOM PDF generated and downloaded successfully!');
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                alert('Error generating PDF. Please try again.');
+            } finally {
+                document.body.removeChild(tempDiv);
+            }
+        }
+
+        async function generateDOCX(data, type) {
+            try {
+                // Create a compact version of the HTML specifically for DOCX with proper A4 sizing
+                const compactHtml = generateCompactMOMHTML(data, type);
+                
+                // Create proper Word document structure with A4 page constraints
+                const wordDocument = `
+<html xmlns:o='urn:schemas-microsoft-com:office:office' 
+      xmlns:w='urn:schemas-microsoft-com:office:word' 
+      xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset="utf-8">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 15">
+<meta name=Originator content="Microsoft Word 15">
+<title>MOM Document</title>
+<!--[if gte mso 9]><xml>
+<w:WordDocument>
+<w:View>Print</w:View>
+<w:Zoom>90</w:Zoom>
+<w:DoNotPromptForConvert/>
+<w:DoNotShowRevisions/>
+<w:DoNotPrintRevisions/>
+</w:WordDocument>
+</xml><![endif]-->
+<style>
+@page Section1 {
+    size: 8.5in 11.0in;
+    margin: 0.3in 0.3in 0.3in 0.3in;
+    mso-header-margin: 0.3in;
+    mso-footer-margin: 0.3in;
+    mso-paper-source: 0;
+}
+div.Section1 {
+    page: Section1;
+}
+body {
+    font-family: Cambria, serif;
+    font-size: 10pt;
+    margin: 0;
+    padding: 0;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 2pt 0;
+    font-size: 9pt;
+}
+td {
+    border: 1pt solid black;
+    padding: 3pt;
+    font-size: 9pt;
+    line-height: 1.1;
+    vertical-align: top;
+}
+th {
+    border: 1pt solid black;
+    padding: 3pt;
+    font-size: 9pt;
+    font-weight: bold;
+    background: #E5E7EB;
+}
+strong {
+    font-weight: bold;
+}
+img {
+    max-width: 100%;
+    height: auto;
+    max-height: 30pt;
+}
+.header-img {
+    text-align: center;
+    margin-bottom: 3pt;
+}
+.customer-header {
+    background: #4472C4;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+}
+.easunmr-header {
+    background: #C5504B;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+}
+.section-header {
+    background: #E5E7EB;
+    font-weight: bold;
+    text-align: center;
+}
+
+
+/* --- Injected: Word export header image fixed size --- */
+.header-img img {
+  width: 20cm !important;
+  height: 3.58cm !important;
+  object-fit: contain !important;
+  display: block !important;
+  margin: 0 auto !important;
+}
+.docx-header img {
+  width: 20cm !important;
+  height: 3.58cm !important;
+  object-fit: contain !important;
+  display: block !important;
+  margin: 0 auto !important;
+}
+
+</style>
+</head>
+<body>
+<div class=Section1>
+${compactHtml}
+</div>
+</body>
+</html>`;
+
+                const blob = new Blob(['\ufeff', wordDocument], {
+                    type: 'application/msword'
+                });
+                
+                const prefix = type === 'overhauling' ? 'Overhauling_MOM' : 'MOM';
+                const filename = `${prefix}_${data.customerName.replace(/\s+/g, '_')}_${data.reportingDate}.doc`;
+                
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                alert('MOM DOC file generated and downloaded successfully!\nOptimized for A4 page format. Open in Microsoft Word to save as DOCX.');
+            } catch (error) {
+                console.error('Error generating DOCX:', error);
+                alert('Error generating DOCX. Please try again or use PDF format.');
+            }
+        }
+
+        function generateCompactMOMHTML(data, type) {
+            const sparesList = data.recommendedSpares.split('\n').filter(spare => spare.trim())
+                .map((spare, index) => `<tr><td style="border: 1pt solid black; padding: 3pt; font-size: 9pt;">${index + 1}.</td><td style="border: 1pt solid black; padding: 3pt; font-size: 9pt;">${spare.trim()}</td></tr>`).join('');
+
+            // Generate service details based on type
+            let serviceDetailsHTML = '';
+            
+            if (type === 'overhauling') {
+                serviceDetailsHTML = `
+        <tr>
+            <td colspan="2" style="border: 1pt solid black; padding: 3pt; text-align: justify; line-height: 1.1; font-size: 9pt;">
+                EMR Engineer visited the site on ${data.reportingDate} regarding inspection and rectification of OLTC Sl.No. ${data.serialNo}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1pt solid black; padding: 3pt; text-align: justify; line-height: 1.1; font-size: 9pt;">
+                <strong>1.</strong> Lifted the diverter switch from the DOVA chamber and cleaned with fresh oil.
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1pt solid black; padding: 3pt; text-align: justify; line-height: 1.1; font-size: 9pt;">
+                <strong>2.</strong> The DOVA contacts were inspected and found satisfactory.
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1pt solid black; padding: 3pt; text-align: justify; line-height: 1.1; font-size: 9pt;">
+                <strong>3.</strong> The diverter switch was odd and even continuity checks found Ok.
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1pt solid black; padding: 3pt; text-align: justify; line-height: 1.1; font-size: 9pt;">
+                <strong>4.</strong> After inspection of the diverter switch the resistance is measured with the value of ${data.resistance} Ω were found satisfactory.
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1pt solid black; padding: 3pt; text-align: justify; line-height: 1.1; font-size: 9pt;">
+                <strong>5.</strong> The diverter switch is operated manually and the operation was found satisfactory.
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1pt solid black; padding: 3pt; text-align: justify; line-height: 1.1; font-size: 9pt;">
+                <strong>6.</strong> Then the diverter switch is re-installed into the chamber and filled with new oil (65kv BDV)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1pt solid black; padding: 3pt; text-align: justify; line-height: 1.1; font-size: 9pt;">
+                <strong>7.</strong> Bevel Gear have applied Grease and found satisfactory.
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1pt solid black; padding: 3pt; text-align: justify; line-height: 1.1; font-size: 9pt;">
+                <strong>8.</strong> Synchronizing is checked between the Drive mechanism and OLTC it was found satisfactory.
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1pt solid black; padding: 3pt; text-align: justify; line-height: 1.1; font-size: 9pt;">
+                <strong>9.</strong> The drive mechanism is operated by manually & electrically it was found satisfactory.
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1pt solid black; padding: 3pt; text-align: justify; line-height: 1.1; font-size: 9pt;">
+                <strong>10.</strong> The final Transformer charge in load.
+            </td>
+        </tr>`;
+                
+                // Add extra points for overhauling
+                if (data.extraPoints && data.extraPoints.length > 0) {
+                    const ohExtraPointsHTML = data.extraPoints.map(point => `
+        <tr>
+            <td colspan="2" style="border: 1pt solid black; padding: 3pt; text-align: justify; line-height: 1.1; font-size: 9pt;">
+                <strong>${point.number}.</strong> ${point.text}
+            </td>
+        </tr>`).join('');
+                    serviceDetailsHTML += ohExtraPointsHTML;
+                }
+            } else {
+                // Regular MOM service details
+                let extraPointsHTML = '';
+                if (data.extraPoints && data.extraPoints.length > 0) {
+                    extraPointsHTML = data.extraPoints.map(point => `
+        <tr>
+            <td colspan="2" style="border: 1pt solid black; padding: 3pt; text-align: justify; line-height: 1.1; font-size: 9pt;">
+                <strong>${point.number}.</strong> ${point.text}
+            </td>
+        </tr>`).join('');
+                }
+
+                serviceDetailsHTML = `
+        <tr>
+            <td colspan="2" style="border: 1pt solid black; padding: 3pt; text-align: justify; line-height: 1.1; font-size: 9pt;">
+                <strong>1.</strong> ${data.problemIdentification}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1pt solid black; padding: 3pt; text-align: justify; line-height: 1.1; font-size: 9pt;">
+                <strong>2.</strong> ${data.technicalInvestigation}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1pt solid black; padding: 3pt; text-align: justify; line-height: 1.1; font-size: 9pt;">
+                <strong>3.</strong> ${data.rootCauseAnalysis}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1pt solid black; padding: 3pt; text-align: justify; line-height: 1.1; font-size: 9pt;">
+                <strong>4.</strong> ${data.correctiveMaintenance}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1pt solid black; padding: 3pt; text-align: justify; line-height: 1.1; font-size: 9pt;">
+                <strong>5.</strong> ${data.systemRestoration}
+            </td>
+        </tr>
+        ${extraPointsHTML}`;
+            }
+
+            return `
+<table style="width:20cm;height:3.58cm;border-collapse:collapse;margin:0 auto;padding:0;">
+<tr><td style="width:20cm;height:3.58cm;padding:0;margin:0;vertical-align:middle;text-align:center;">
+  <img src="${headerImgData}" alt="Header" width="756" height="135" style="width:20cm;height:3.58cm;display:block;margin:0 auto;object-fit:contain;border:none;max-width:20cm;max-height:3.58cm;" />
+</td></tr></table>
+
+<table style="width: 100%; border-collapse: collapse; margin: 2pt 0;">
+    <tr>
+        <td style="border: 1pt solid black; padding: 3pt; font-size: 10pt; width: 50%;"><strong>Customer:</strong> ${data.customerName}</td>
+        <td style="border: 1pt solid black; padding: 3pt; font-size: 10pt; width: 25%;"></td>
+        <td style="border: 1pt solid black; padding: 3pt; font-size: 10pt; width: 25%; text-align: center;"><strong>Date:</strong> ${data.reportingDate}</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1pt solid black; padding: 3pt; font-size: 10pt;"><strong>Site Address:</strong> ${data.siteAddress}</td>
+    </tr>
+    <tr>
+        <td style="border: 1pt solid black; padding: 3pt; font-size: 10pt;"><strong>Site Reporting Date:</strong> ${data.reportingDate}</td>
+        <td style="border: 1pt solid black; padding: 3pt; font-size: 10pt; text-align: center;"><strong>Completion Date:</strong> ${data.completionDate}</td>
+        <td style="border: 1pt solid black; padding: 3pt; font-size: 10pt; text-align: center;"><strong>No. of days:</strong> ${data.numberOfDays}</td>
+    </tr>
+    <tr>
+        <td style="border: 1pt solid black; padding: 3pt; font-size: 10pt;"><strong>Last Service Date:</strong> ${data.lastServiceDate}</td>
+        <td style="border: 1pt solid black; padding: 3pt; font-size: 10pt; text-align: center;"><strong>Next Due In Operation:</strong></td>
+        <td style="border: 1pt solid black; padding: 3pt; font-size: 10pt; text-align: center;"><strong>Next Due Date:</strong> ${data.nextDueDate}</td>
+    </tr>
+    <tr>
+        <td style="border: 1pt solid black; padding: 3pt; font-size: 10pt;"><strong>Warranty:</strong> ${data.serviceType}</td>
+        <td style="border: 1pt solid black; padding: 3pt; font-size: 10pt; text-align: center;"><strong>${data.recoveryType}</strong></td>
+        <td style="border: 1pt solid black; padding: 3pt; font-size: 10pt; text-align: center;"><strong>Business Opportunity:</strong></td>
+    </tr>
+</table>
+
+<table style="width: 100%; border-collapse: collapse; margin: 2pt 0;">
+    <tr>
+        <th style="border: 1pt solid black; padding: 3pt; background: #E5E7EB; font-weight: bold; font-size: 10pt; width: 50%;">OLTC Details:</th>
+        <th style="border: 1pt solid black; padding: 3pt; background: #E5E7EB; font-weight: bold; font-size: 10pt; width: 50%;">Transformer Details:</th>
+    </tr>
+    <tr>
+        <td style="border: 1pt solid black; padding: 3pt; vertical-align: top; font-size: 9pt;">
+            <strong>Specification:</strong> ${data.specification}<br>
+            <strong>Serial No:</strong> ${data.serialNo} <strong>Year of Mfg:</strong> ${data.yearOfMfg}<br>
+            <strong>Resistance:</strong> ${data.resistance} Ohms<br>
+            <strong>Counter Reading:</strong> ${data.counterReading}
+        </td>
+        <td style="border: 1pt solid black; padding: 3pt; vertical-align: top; font-size: 9pt;">
+            <strong>Make:</strong> ${data.transformerMake}<br>
+            <strong>Sl. No:</strong> ${data.transformerSlNo}<br>
+            <strong>Rating (MVA/KV):</strong> ${data.transformerRating}<br>
+            Transformer
+        </td>
+    </tr>
+</table>
+
+<table style="width: 100%; border-collapse: collapse; margin: 2pt 0;">
+    <tr>
+        <th style="border: 1pt solid black; padding: 3pt; background: #E5E7EB; font-weight: bold; font-size: 10pt;" colspan="2">OLTC - Service Details:</th>
+    </tr>
+    ${serviceDetailsHTML}
+</table>
+
+<table style="width: 100%; border-collapse: collapse; margin: 2pt 0;">
+    <tr>
+        <th style="border: 1pt solid black; padding: 3pt; background: #E5E7EB; font-weight: bold; font-size: 10pt;" colspan="2">Recommended Spares:</th>
+    </tr>
+    ${sparesList}
+</table>
+
+<table style="width: 100%; border-collapse: collapse; margin: 2pt 0;">
+    <tr>
+        <th class="customer-header" style="border: 1pt solid black; padding: 3pt; color: white; font-weight: bold; font-size: 10pt; width: 50%; text-align: center;">CUSTOMER</th>
+        <th class="easunmr-header" style="border: 1pt solid black; padding: 3pt; color: white; font-weight: bold; font-size: 10pt; width: 50%; text-align: center;">EASUNMR</th>
+    </tr>
+    <tr>
+        <td style="border: 1pt solid black; padding: 3pt; font-size: 9pt;"><strong>Name:</strong> ${data.customerContactName}</td>
+        <td style="border: 1pt solid black; padding: 3pt; font-size: 9pt;"><strong>${data.engineerName}</strong></td>
+    </tr>
+    <tr>
+        <td style="border: 1pt solid black; padding: 3pt; font-size: 9pt;"><strong>Ph No:</strong> ${data.customerPhone}</td>
+        <td style="border: 1pt solid black; padding: 3pt; font-size: 9pt;"><strong>${data.engineerPosition}</strong></td>
+    </tr>
+    <tr>
+        <td style="border: 1pt solid black; padding: 3pt; font-size: 9pt;"><strong>Email:</strong> ${data.customerEmail}</td>
+        <td style="border: 1pt solid black; padding: 3pt; font-size: 9pt;"><strong>${data.engineerPhone}</strong></td>
+    </tr>
+    <tr>
+        <td style="border: 1pt solid black; padding: 3pt; font-size: 9pt;"><strong>Sign</strong></td>
+        <td style="border: 1pt solid black; padding: 3pt; font-size: 9pt;"><strong>Email: emrbrc@emr.global</strong></td>
+    </tr>
+</table>`;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-GB');
+        }
+
+        function generateMOMHTML(data, type) {
+            const sparesList = data.recommendedSpares.split('\n').filter(spare => spare.trim())
+                .map((spare, index) => `<tr><td style="border: 1px solid #000; padding: 10px; font-size: 16px;">${index + 1}.</td><td style="border: 1px solid #000; padding: 10px; font-size: 16px;">${spare.trim()}</td></tr>`).join('');
+
+            // Generate service details based on type
+            let serviceDetailsHTML = '';
+            
+            if (type === 'overhauling') {
+                serviceDetailsHTML = `
+        <tr>
+            <td colspan="2" style="border: 1px solid #000; padding: 12px; text-align: justify; line-height: 1.4; font-size: 14px;">
+                EMR Engineer visited the site on ${data.reportingDate} regarding inspection and rectification of OLTC Sl.No. ${data.serialNo}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1px solid #000; padding: 12px; text-align: justify; line-height: 1.4; font-size: 14px;">
+                <strong>1.</strong> Lifted the diverter switch from the DOVA chamber and cleaned with fresh oil.
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1px solid #000; padding: 12px; text-align: justify; line-height: 1.4; font-size: 14px;">
+                <strong>2.</strong> The DOVA contacts were inspected and found satisfactory.
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1px solid #000; padding: 12px; text-align: justify; line-height: 1.4; font-size: 14px;">
+                <strong>3.</strong> The diverter switch was odd and even continuity checks found Ok.
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1px solid #000; padding: 12px; text-align: justify; line-height: 1.4; font-size: 14px;">
+                <strong>4.</strong> After inspection of the diverter switch the resistance is measured with the value of ${data.resistance} Ω were found satisfactory.
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1px solid #000; padding: 12px; text-align: justify; line-height: 1.4; font-size: 14px;">
+                <strong>5.</strong> The diverter switch is operated manually and the operation was found satisfactory.
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1px solid #000; padding: 12px; text-align: justify; line-height: 1.4; font-size: 14px;">
+                <strong>6.</strong> Then the diverter switch is re-installed into the chamber and filled with new oil (65kv BDV)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1px solid #000; padding: 12px; text-align: justify; line-height: 1.4; font-size: 14px;">
+                <strong>7.</strong> Bevel Gear have applied Grease and found satisfactory.
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1px solid #000; padding: 12px; text-align: justify; line-height: 1.4; font-size: 14px;">
+                <strong>8.</strong> Synchronizing is checked between the Drive mechanism and OLTC it was found satisfactory.
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1px solid #000; padding: 12px; text-align: justify; line-height: 1.4; font-size: 14px;">
+                <strong>9.</strong> The drive mechanism is operated by manually & electrically it was found satisfactory.
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1px solid #000; padding: 12px; text-align: justify; line-height: 1.4; font-size: 14px;">
+                <strong>10.</strong> The final Transformer charge in load.
+            </td>
+        </tr>`;
+                
+                // Add extra points for overhauling
+                if (data.extraPoints && data.extraPoints.length > 0) {
+                    const ohExtraPointsHTML = data.extraPoints.map(point => `
+        <tr>
+            <td colspan="2" style="border: 1px solid #000; padding: 12px; text-align: justify; line-height: 1.4; font-size: 14px;">
+                <strong>${point.number}.</strong> ${point.text}
+            </td>
+        </tr>`).join('');
+                    serviceDetailsHTML += ohExtraPointsHTML;
+                }
+            } else {
+                // Regular MOM service details
+                let extraPointsHTML = '';
+                if (data.extraPoints && data.extraPoints.length > 0) {
+                    extraPointsHTML = data.extraPoints.map(point => `
+        <tr>
+            <td colspan="2" style="border: 1px solid #000; padding: 12px; text-align: justify; line-height: 1.4; font-size: 14px;">
+                <strong>${point.number}.</strong> ${point.text}
+            </td>
+        </tr>`).join('');
+                }
+
+                serviceDetailsHTML = `
+        <tr>
+            <td colspan="2" style="border: 1px solid #000; padding: 12px; text-align: justify; line-height: 1.4; font-size: 14px;">
+                <strong>1.</strong> ${data.problemIdentification}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1px solid #000; padding: 12px; text-align: justify; line-height: 1.4; font-size: 14px;">
+                <strong>2.</strong> ${data.technicalInvestigation}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1px solid #000; padding: 12px; text-align: justify; line-height: 1.4; font-size: 14px;">
+                <strong>3.</strong> ${data.rootCauseAnalysis}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1px solid #000; padding: 12px; text-align: justify; line-height: 1.4; font-size: 14px;">
+                <strong>4.</strong> ${data.correctiveMaintenance}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: 1px solid #000; padding: 12px; text-align: justify; line-height: 1.4; font-size: 14px;">
+                <strong>5.</strong> ${data.systemRestoration}
+            </td>
+        </tr>
+        ${extraPointsHTML}`;
+            }
+
+            return `<div style="font-family: Cambria, serif; width: 100%; background: white; font-size: 16px; line-height: 1.4;">
+    <div style="text-align: center; margin-bottom: 20px;">
+        ${headerImgData 
+            ? `<img src="${headerImgData}" style="width: 100%; max-height: 140px; object-fit: contain;">` 
+            : `<div style="background: linear-gradient(90deg, #1e3a8a 0%, #dc2626 100%); color: white; padding: 20px; border-radius: 5px;">
+                <h1 style="margin: 0; font-size: 32px;">EMR Tap Changers Private Limited</h1>
+                <p style="margin: 8px 0; font-size: 16px;">Since 1974</p>
+                <div style="background: #dc2626; padding: 10px; margin: 15px 0; font-size: 22px; font-weight: bold;">MOM - Minutes of Meeting</div>
+               </div>`}
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
+        <tr>
+            <td style="border: 1px solid #000; padding: 12px; font-size: 17px; width: 50%;"><strong>Customer:</strong> ${data.customerName}</td>
+            <td style="border: 1px solid #000; padding: 12px; font-size: 17px; width: 25%;"></td>
+            <td style="border: 1px solid #000; padding: 12px; font-size: 17px; width: 25%; text-align: center;"><strong>Date:</strong> ${data.reportingDate}</td>
+        </tr>
+        <tr>
+            <td colspan="3" style="border: 1px solid #000; padding: 12px; font-size: 17px;"><strong>Site Address:</strong> ${data.siteAddress}</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #000; padding: 12px; font-size: 17px;"><strong>Site Reporting Date:</strong> ${data.reportingDate}</td>
+            <td style="border: 1px solid #000; padding: 12px; font-size: 17px; text-align: center;"><strong>Completion Date:</strong> ${data.completionDate}</td>
+            <td style="border: 1px solid #000; padding: 12px; font-size: 17px; text-align: center;"><strong>No. of days:</strong> ${data.numberOfDays}</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #000; padding: 12px; font-size: 17px;"><strong>Last Service Date:</strong> ${data.lastServiceDate}</td>
+            <td style="border: 1px solid #000; padding: 12px; font-size: 17px; text-align: center;"><strong>Next Due In Operation:</strong></td>
+            <td style="border: 1px solid #000; padding: 12px; font-size: 17px; text-align: center;"><strong>Next Due Date:</strong> ${data.nextDueDate}</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #000; padding: 12px; font-size: 17px;"><strong>Warranty:</strong> ${data.serviceType}</td>
+            <td style="border: 1px solid #000; padding: 12px; font-size: 17px; text-align: center;"><strong>${data.recoveryType}</strong></td>
+            <td style="border: 1px solid #000; padding: 12px; font-size: 17px; text-align: center;"><strong>Business Opportunity:</strong></td>
+        </tr>
+    </table>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
+        <tr>
+            <td style="border: 1px solid #000; padding: 12px; background: #e5e7eb; font-weight: bold; font-size: 17px; width: 50%;"><strong>OLTC Details:</strong></td>
+            <td style="border: 1px solid #000; padding: 12px; background: #e5e7eb; font-weight: bold; font-size: 17px; width: 50%;"><strong>Transformer Details:</strong></td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #000; padding: 12px; vertical-align: top; font-size: 15px;">
+                <strong>Specification:</strong> ${data.specification}<br>
+                <strong>Serial No:</strong> ${data.serialNo} <strong>Year of Mfg:</strong> ${data.yearOfMfg}<br>
+                <strong>Resistance:</strong> ${data.resistance} Ohms<br>
+                <strong>Counter Reading:</strong> ${data.counterReading}
+            </td>
+            <td style="border: 1px solid #000; padding: 12px; vertical-align: top; font-size: 15px;">
+                <strong>Make:</strong> ${data.transformerMake}<br>
+                <strong>Sl. No:</strong> ${data.transformerSlNo}<br>
+                <strong>Rating (MVA/KV):</strong> ${data.transformerRating}<br>
+                Transformer
+            </td>
+        </tr>
+    </table>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
+        <tr>
+            <td style="border: 1px solid #000; padding: 12px; background: #e5e7eb; font-weight: bold; font-size: 17px;" colspan="2"><strong>OLTC - Service Details:</strong></td>
+        </tr>
+        ${serviceDetailsHTML}
+    </table>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
+        <tr>
+            <td style="border: 1px solid #000; padding: 12px; background: #e5e7eb; font-weight: bold; font-size: 17px;" colspan="2"><strong>Recommended Spares:</strong></td>
+        </tr>
+        ${sparesList}
+    </table>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
+        <tr>
+            <td style="border: 1px solid #000; padding: 12px; background: #3b82f6; color: white; font-weight: bold; font-size: 17px; width: 50%; text-align: center;"><strong>CUSTOMER</strong></td>
+            <td style="border: 1px solid #000; padding: 12px; background: #dc2626; color: white; font-weight: bold; font-size: 17px; width: 50%; text-align: center;"><strong>EASUNMR</strong></td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #000; padding: 12px; font-size: 16px;"><strong>Name:</strong> ${data.customerContactName}</td>
+            <td style="border: 1px solid #000; padding: 12px; font-size: 16px;"><strong>${data.engineerName}</strong></td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #000; padding: 12px; font-size: 16px;"><strong>Ph No:</strong> ${data.customerPhone}</td>
+            <td style="border: 1px solid #000; padding: 12px; font-size: 16px;"><strong>${data.engineerPosition}</strong></td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #000; padding: 12px; font-size: 16px;"><strong>Email:</strong> ${data.customerEmail}</td>
+            <td style="border: 1px solid #000; padding: 12px; font-size: 16px;"><strong>${data.engineerPhone}</strong></td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #000; padding: 12px; font-size: 16px;"><strong>Sign</strong></td>
+            <td style="border: 1px solid #000; padding: 12px; font-size: 16px;"><strong>Email: emrbrc@emr.global</strong></td>
+        </tr>
+    </table>
+</div>`;
+        }
+    </script>
+</body>
+</html>
