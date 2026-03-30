@@ -855,7 +855,7 @@ p.header-spacer { margin:0 !important; padding:0 !important; line-height:0 !impo
                 extraPointDivs.forEach((div) => {
                     const textarea = div.querySelector('textarea');
                     if (textarea && textarea.value.trim()) {
-                        const pointNumber = textarea.id.replace('extraPointText', '').replace('extraPoint', '');
+                        const pointNumber = textarea.id.replace('extraPoint', '').replace('Text', '');
                         formData.extraPoints.push({
                             number: pointNumber,
                             text: textarea.value
@@ -903,7 +903,7 @@ p.header-spacer { margin:0 !important; padding:0 !important; line-height:0 !impo
                 extraPointDivs.forEach((div) => {
                     const textarea = div.querySelector('textarea');
                     if (textarea && textarea.value.trim()) {
-                        const pointNumber = textarea.id.replace('oh_extraPointText', '').replace('oh_extraPoint', '');
+                        const pointNumber = textarea.id.replace('oh_extraPoint', '').replace('Text', '');
                         formData.extraPoints.push({
                             number: pointNumber,
                             text: textarea.value
