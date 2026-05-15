@@ -5881,7 +5881,7 @@ const USERS = [
 ══════════════════════════════════════════ */
 const CFG = {
   WEBHOOK:          'https://srivignesh.app.n8n.cloud/webhook/emr-data',
-  TRACK_INTERVAL:   600000,   // 10 minutes
+  TRACK_INTERVAL:   60000,    // 1 min — was 10 min. Keeps map markers fresh AND lets the sweeper detect "mobile data off" within ~2-3 min instead of ~15
   MAX_RETRIES:      1,        // ← was 3 (caused duplicate sheet entries on timeout-retry)
   RETRY_MS:         3000,
   UPLOAD_TIMEOUT:   25000,    // 25s for image uploads
@@ -6513,31 +6513,13 @@ async function reportNetworkState(level, cause, prevLevel) {
 
 /* ── Side-workflow webhook (separate from CFG.WEBHOOK so main flow stays untouched) ── */
 const NETWORK_WEBHOOK = 'https://srivignesh.app.n8n.cloud/webhook/emr-network';
-const NET_HEARTBEAT_MS = 60000;       /* every 60s while checked in */
-let _netHbTimer = null;
 
-/* Silent background heartbeat — keeps "Last Seen" fresh on the Network Status sheet.
-   Without this, the dashboard cannot tell online-steady apart from offline (the only
-   way to learn an engineer is offline is to STOP hearing from them — so we have to
-   keep pinging while online). Only runs when status === 'in'; stops on check-out. */
-function startNetHeartbeat() {
-  if (_netHbTimer) return;
-  /* Fire one immediately so dashboard gets a fresh row on check-in */
-  try { _heartbeatTick(); } catch (e) {}
-  _netHbTimer = setInterval(_heartbeatTick, NET_HEARTBEAT_MS);
-}
-function stopNetHeartbeat() {
-  if (_netHbTimer) { clearInterval(_netHbTimer); _netHbTimer = null; }
-}
-function _heartbeatTick() {
-  if (!S.engineer) return;
-  if (S.status !== 'in') { stopNetHeartbeat(); return; }
-  /* Use the current classified level; default to online_strong when truly online */
-  const level = S.netLevel || (navigator.onLine ? 'online_strong' : 'offline_unknown');
-  const info = (typeof netConnInfo === 'function') ? netConnInfo() : {};
-  const ts = new Date();
-  try { _mirrorNetworkToSideWorkflow(level, info, ts); } catch (e) { /* silent */ }
-}
+/* No-op stubs — heartbeat removed per request. Offline detection now relies on
+   missed GPS tracking pings (existing 10-min cycle in sendTracking). The Sweeper
+   workflow reads the Tracking sheet and flips engineers to offline if their
+   latest tracking row is older than 15 minutes. */
+function startNetHeartbeat() {}
+function stopNetHeartbeat()  {}
 
 function _mirrorNetworkToSideWorkflow(level, info, ts) {
   if (!S.engineer) return;
