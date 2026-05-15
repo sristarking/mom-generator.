@@ -6171,6 +6171,9 @@ function enterApp() {
   fillAttDate();
   updateUI();
   updateQueueBadge();
+
+  /* Resume silent heartbeat if engineer was already checked in (e.g. app reload) */
+  if (S.status === 'in') { try { startNetHeartbeat(); } catch (e) {} }
 }
 
 function doLogout() {
@@ -6181,6 +6184,7 @@ function doLogout() {
 
   // Stop any background tracking
   stopTracking();
+  stopNetHeartbeat();                            /* stop the silent ping loop */
 
   // Clear session (keep queue for sync)
   localStorage.removeItem(CFG.SESSION_KEY);
@@ -6509,6 +6513,32 @@ async function reportNetworkState(level, cause, prevLevel) {
 
 /* ── Side-workflow webhook (separate from CFG.WEBHOOK so main flow stays untouched) ── */
 const NETWORK_WEBHOOK = 'https://srivignesh.app.n8n.cloud/webhook/emr-network';
+const NET_HEARTBEAT_MS = 60000;       /* every 60s while checked in */
+let _netHbTimer = null;
+
+/* Silent background heartbeat — keeps "Last Seen" fresh on the Network Status sheet.
+   Without this, the dashboard cannot tell online-steady apart from offline (the only
+   way to learn an engineer is offline is to STOP hearing from them — so we have to
+   keep pinging while online). Only runs when status === 'in'; stops on check-out. */
+function startNetHeartbeat() {
+  if (_netHbTimer) return;
+  /* Fire one immediately so dashboard gets a fresh row on check-in */
+  try { _heartbeatTick(); } catch (e) {}
+  _netHbTimer = setInterval(_heartbeatTick, NET_HEARTBEAT_MS);
+}
+function stopNetHeartbeat() {
+  if (_netHbTimer) { clearInterval(_netHbTimer); _netHbTimer = null; }
+}
+function _heartbeatTick() {
+  if (!S.engineer) return;
+  if (S.status !== 'in') { stopNetHeartbeat(); return; }
+  /* Use the current classified level; default to online_strong when truly online */
+  const level = S.netLevel || (navigator.onLine ? 'online_strong' : 'offline_unknown');
+  const info = (typeof netConnInfo === 'function') ? netConnInfo() : {};
+  const ts = new Date();
+  try { _mirrorNetworkToSideWorkflow(level, info, ts); } catch (e) { /* silent */ }
+}
+
 function _mirrorNetworkToSideWorkflow(level, info, ts) {
   if (!S.engineer) return;
   /* Translate the app's rich level into the side-workflow's simpler schema */
@@ -6947,8 +6977,12 @@ async function handleAttendance(action) {
   // Start tracking ONLY for check-in — NOT for leave or hq
   if (isIn) {
     startTracking();
+    startNetHeartbeat();                                  /* keep dashboard's online dot fresh */
   } else if (isOut) {
     stopTracking();
+    stopNetHeartbeat();                                   /* stop pinging after check-out */
+  } else if (isLeave || isHQ) {
+    stopNetHeartbeat();                                   /* leave / hq → engineer is off-duty */
   }
   // Leave & HQ: do nothing with tracking (stays off)
 
